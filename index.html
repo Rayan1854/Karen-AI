@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Karen AI</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111827;
+      color: white;
+    }
+
+    .app {
+      max-width: 600px;
+      margin: auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      background: #1f2937;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #9ca3af;
+    }
+
+    #chat {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .message {
+      padding: 12px 16px;
+      margin: 10px 0;
+      border-radius: 15px;
+      max-width: 80%;
+    }
+
+    .karen {
+      background: #374151;
+      margin-right: auto;
+    }
+
+    .user {
+      background: #2563eb;
+      margin-left: auto;
+    }
+
+    .input-area {
+      display: flex;
+      padding: 12px;
+      background: #1f2937;
+      gap: 8px;
+    }
+
+    input {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <header>
+      <h1>🤖 Karen</h1>
+      <p>Tu asistente de inteligencia artificial</p>
+    </header>
+
+    <div id="chat">
+      <div class="message karen">
+        Hola, soy Karen. 👋<br>
+        Estoy aquí para ayudarte.
+      </div>
+    </div>
+
+    <div class="input-area">
+      <input id="messageInput" type="text" placeholder="Escribe a Karen...">
+      <button onclick="sendMessage()">Enviar</button>
+    </div>
+
+  </div>
+
+  <script>
+    function sendMessage() {
+
+      const input = document.getElementById("messageInput");
+      const chat = document.getElementById("chat");
+
+      const message = input.value.trim();
+
+      if (message === "") return;
+
+      chat.innerHTML += `
+        <div class="message user">
+          ${message}
+        </div>
+      `;
+
+      let response;
+
+      const text = message.toLowerCase();
+
+      if (text.includes("quién te creó") ||
+          text.includes("quien te creo")) {
+
+        response =
+          "Fui creada por Rayan con ayuda de ChatGPT. 🤖";
+
+      } else if (text.includes("hola")) {
+
+        response =
+          "¡Hola! 😊 Me alegra hablar contigo.";
+
+      } else if (text.includes("cómo estás") ||
+                 text.includes("como estas")) {
+
+        response =
+          "Estoy muy bien y preparada para ayudarte.";
+
+      } else {
+
+        response =
+          "Todavía estoy aprendiendo. Esta es mi primera versión, pero vamos a hacerme mucho más inteligente. 🚀";
+      }
+
+      setTimeout(() => {
+
+        chat.innerHTML += `
+          <div class="message karen">
+            ${response}
+          </div>
+        `;
+
+        chat.scrollTop = chat.scrollHeight;
+
+      }, 500);
+
+      input.value = "";
+    }
+  </script>
+
+</body>
+</html>
