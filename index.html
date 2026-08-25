@@ -125,6 +125,14 @@
       .app {
         max-height: none;
       }
+
+      .message {
+        max-width: 90%;
+      }
+
+      button {
+        padding: 0 14px;
+      }
     }
   </style>
 </head>
@@ -155,7 +163,7 @@
         autocomplete="off"
       >
 
-      <button onclick="sendMessage()">Enviar</button>
+      <button id="sendButton">Enviar</button>
 
     </div>
 
@@ -165,14 +173,12 @@
 
     const input = document.getElementById("messageInput");
     const chat = document.getElementById("chat");
+    const sendButton = document.getElementById("sendButton");
 
-    // Permite enviar pulsando ENTER
-    input.addEventListener("keydown", function(event) {
-      if (event.key === "Enter") {
-        sendMessage();
-      }
-    });
 
+    // ==============================
+    // MOSTRAR MENSAJES
+    // ==============================
 
     function addMessage(text, type) {
 
@@ -188,16 +194,31 @@
     }
 
 
-    function getKarenResponse(message) {
+    // ==============================
+    // LIMPIAR TEXTO
+    // ==============================
 
-      const text = message
+    function limpiarTexto(texto) {
+
+      return texto
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .trim();
+    }
+
+
+    // ==============================
+    // RESPUESTAS DE KAREN
+    // ==============================
+
+    function getKarenResponse(message) {
+
+      const text = limpiarTexto(message);
 
 
       // SALUDOS
+
       if (
         text === "hola" ||
         text.includes("hola ") ||
@@ -206,101 +227,159 @@
         text.includes("buenas tardes") ||
         text.includes("buenas noches")
       ) {
+
         return "¡Hola! 👋 Soy Karen. Me alegra hablar contigo. ¿Cómo estás?";
       }
 
 
-      // ¿CÓMO ESTÁS?
+      // CÓMO ESTÁS
+
       if (
         text.includes("como estas") ||
         text.includes("como te encuentras") ||
         text.includes("que tal estas")
       ) {
-        return "Estoy muy bien 😊 Gracias por preguntar. Estoy aquí contigo. ¿Qué te gustaría hacer?";
+
+        return "Estoy muy bien 😊. Gracias por preguntar. ¿En qué puedo ayudarte?";
       }
 
 
       // QUIÉN ERES
+
       if (
         text.includes("quien eres") ||
         text.includes("quien es karen") ||
         text.includes("eres una ia") ||
-        text.includes("eres una inteligencia artificial")
+        text.includes("inteligencia artificial")
       ) {
-        return "Soy Karen 🤖, una asistente virtual creada para conversar contigo y ayudarte.";
+
+        return "Soy Karen 🤖, tu asistente virtual. Estoy aquí para conversar contigo y ayudarte.";
       }
 
 
       // NOMBRE
+
       if (
         text.includes("como te llamas") ||
-        text.includes("cual es tu nombre")
+        text.includes("cual es tu nombre") ||
+        text.includes("tu nombre")
       ) {
+
         return "Me llamo Karen 😊.";
       }
 
 
       // GRACIAS
+
       if (
         text.includes("gracias") ||
         text.includes("muchas gracias")
       ) {
+
         return "¡De nada! 😊 Para eso estoy.";
       }
 
 
       // DESPEDIDA
+
       if (
         text.includes("adios") ||
         text.includes("hasta luego") ||
         text.includes("nos vemos") ||
         text === "bye"
       ) {
+
         return "¡Hasta luego! 👋 Cuando quieras, puedes volver a hablar conmigo.";
       }
 
 
       // AYUDA
+
       if (
         text.includes("ayuda") ||
-        text.includes("puedes ayudarme")
+        text.includes("puedes ayudarme") ||
+        text.includes("necesito ayuda")
       ) {
-        return "Claro 😊. Dime qué necesitas y veremos qué puedo hacer.";
+
+        return "Claro 😊. Dime qué necesitas y haré lo posible por ayudarte.";
       }
 
 
-      // QUÉ HACES
+      // QUÉ PUEDES HACER
+
       if (
+        text.includes("que puedes hacer") ||
         text.includes("que haces") ||
-        text.includes("que puedes hacer")
+        text.includes("para que sirves")
       ) {
-        return "Puedo conversar contigo, responder preguntas sencillas y reaccionar de distintas maneras según lo que me escribas.";
+
+        return "Puedo conversar contigo, responder preguntas sencillas y ayudarte con diferentes tareas. 🤖";
       }
 
 
-      // ESTADO DE ÁNIMO
+      // ESTOY TRISTE
+
       if (
         text.includes("estoy triste") ||
-        text.includes("me siento triste")
+        text.includes("me siento triste") ||
+        text.includes("estoy mal")
       ) {
-        return "Lo siento 😔. Si quieres, puedes contarme qué ha pasado. Te escucho.";
+
+        return "Lo siento 😔. Si quieres, cuéntame qué ha pasado. Estoy aquí para escucharte.";
       }
 
+
+      // ESTOY FELIZ
 
       if (
         text.includes("estoy feliz") ||
         text.includes("estoy contento") ||
         text.includes("estoy contenta")
       ) {
-        return "¡Qué bien! 😄 Me alegra saberlo. Cuéntame, ¿qué ha pasado?";
+
+        return "¡Qué bien! 😄 Me alegra mucho saberlo. Cuéntame qué ha pasado.";
       }
 
 
-      // PREGUNTAS SOBRE EL DÍA
+      // ME ABURRO
+
+      if (
+        text.includes("estoy aburrido") ||
+        text.includes("estoy aburrida") ||
+        text.includes("me aburro")
+      ) {
+
+        return "¡Pues vamos a solucionar eso! 😄 Podemos conversar, jugar o pensar en algo divertido.";
+      }
+
+
+      // HORA
+
+      if (
+        text.includes("que hora es") ||
+        text.includes("dime la hora") ||
+        text.includes("hora actual")
+      ) {
+
+        const fecha = new Date();
+
+        return "Ahora mismo son las " +
+          fecha.toLocaleTimeString("es-ES", {
+            hour: "2-digit",
+            minute: "2-digit"
+          }) +
+          ".";
+      }
+
+
+      // FECHA
+
       if (
         text.includes("que dia es") ||
-        text.includes("en que dia estamos")
+        text.includes("en que dia estamos") ||
+        text.includes("fecha de hoy")
       ) {
+
         const fecha = new Date();
 
         return "Hoy es " +
@@ -314,31 +393,28 @@
       }
 
 
-      // HORA
-      if (
-        text.includes("que hora es") ||
-        text.includes("dime la hora")
-      ) {
-        const fecha = new Date();
-
-        return "Ahora mismo son las " +
-          fecha.toLocaleTimeString("es-ES", {
-            hour: "2-digit",
-            minute: "2-digit"
-          }) +
-          ".";
-      }
-
-
       // RESPUESTAS GENERALES
+
       const respuestas = [
+
         "Interesante 🤔. Cuéntame un poco más.",
-        "Te estoy escuchando 👂. ¿Puedes explicármelo un poco mejor?",
+
+        "Te estoy escuchando 👂. Explícamelo un poco mejor.",
+
         "Entiendo 😊. ¿Qué quieres saber exactamente?",
-        "Vale. Estoy aquí contigo. Cuéntame más.",
+
+        "Vale 👍. Estoy aquí contigo. Cuéntame más.",
+
         "Eso suena interesante. ¿Qué quieres hacer con eso?",
-        "Entendido 👍. Explícame un poco más y te ayudo."
+
+        "Entendido 👍. Explícame un poco más y te ayudo.",
+
+        "Hmm 🤔, quiero entenderte mejor. ¿Puedes explicarlo de otra manera?",
+
+        "Claro. Cuéntame un poco más sobre eso 😊."
+
       ];
+
 
       return respuestas[
         Math.floor(Math.random() * respuestas.length)
@@ -346,25 +422,34 @@
     }
 
 
+    // ==============================
+    // ENVIAR MENSAJE
+    // ==============================
+
     function sendMessage() {
 
       const message = input.value.trim();
 
-      // No hacer nada si está vacío
+
+      // No enviar mensajes vacíos
+
       if (message === "") {
         return;
       }
 
 
       // Mostrar mensaje del usuario
+
       addMessage(message, "user");
 
 
       // Limpiar input
+
       input.value = "";
 
 
-      // Mostrar que Karen está escribiendo
+      // Mostrar "Karen está escribiendo..."
+
       const typing = document.createElement("div");
 
       typing.className = "typing";
@@ -376,7 +461,8 @@
       chat.scrollTop = chat.scrollHeight;
 
 
-      // Esperar un poco para que parezca una conversación
+      // Simular respuesta
+
       setTimeout(function() {
 
         typing.remove();
@@ -387,6 +473,35 @@
 
       }, 700);
     }
+
+
+    // ==============================
+    // BOTÓN ENVIAR
+    // ==============================
+
+    sendButton.addEventListener("click", function() {
+
+      sendMessage();
+
+    });
+
+
+    // ==============================
+    // ENTER PARA ENVIAR
+    // ==============================
+
+    input.addEventListener("keydown", function(event) {
+
+      if (event.key === "Enter") {
+
+        event.preventDefault();
+
+        sendMessage();
+
+      }
+
+    });
+
 
   </script>
 
