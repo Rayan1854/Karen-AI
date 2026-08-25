@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Karen IA</title>
+  <title>Karen-AI</title>
 
   <style>
     * {
@@ -18,59 +18,54 @@
     }
 
     .app {
-      max-width: 700px;
-      margin: auto;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+      max-width: 600px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 20px;
     }
 
     header {
       text-align: center;
-      padding: 25px 15px;
-      background: #1e293b;
+      padding: 20px 0;
     }
 
-    header h1 {
+    h1 {
       margin: 0;
       font-size: 32px;
     }
 
     header p {
-      margin: 8px 0 0;
       color: #94a3b8;
-      font-size: 18px;
     }
 
     #chat {
-      flex: 1;
+      background: #1e293b;
+      border-radius: 15px;
+      padding: 15px;
+      min-height: 400px;
+      margin-bottom: 15px;
       overflow-y: auto;
-      padding: 20px;
     }
 
     .message {
-      padding: 14px 18px;
-      margin-bottom: 12px;
-      border-radius: 15px;
-      max-width: 85%;
-      line-height: 1.4;
+      padding: 12px 15px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      line-height: 1.5;
     }
 
-    .message.karen {
-      background: #374151;
-      margin-right: auto;
+    .karen {
+      background: #334155;
     }
 
-    .message.user {
+    .user {
       background: #2563eb;
-      margin-left: auto;
+      text-align: right;
     }
 
     .input-area {
       display: flex;
       gap: 10px;
-      padding: 15px;
-      background: #1e293b;
     }
 
     #messageInput {
@@ -93,7 +88,7 @@
     }
 
     button:active {
-      opacity: 0.8;
+      transform: scale(0.97);
     }
   </style>
 </head>
@@ -124,7 +119,9 @@
         placeholder="Escribe tu mensaje..."
       >
 
-      <button onclick="sendMessage()">Enviar</button>
+      <button onclick="sendMessage()">
+        Enviar
+      </button>
 
     </div>
 
@@ -150,67 +147,21 @@
         </div>
       `;
 
-      const text = message.toLowerCase();
-
-      let response;
-
-      if (text.includes("hola")) {
-
-        response = "¡Hola! 😊 Me alegra hablar contigo.";
-
-      } else if (
-        text.includes("cómo estás") ||
-        text.includes("como estas")
-      ) {
-
-        response = "Estoy muy bien 😊. ¿En qué puedo ayudarte?";
-
-      } else if (
-        text.includes("quién te creó") ||
-        text.includes("quien te creo")
-      ) {
-
-        response = "Fui creada por Rayan con ayuda de ChatGPT. 🤖";
-
-      } else if (
-        text.includes("tu nombre") ||
-        text.includes("cómo te llamas") ||
-        text.includes("como te llamas")
-      ) {
-
-        response = "Me llamo Karen. 🤖";
-
-      } else if (
-        text.includes("gracias")
-      ) {
-
-        response = "¡De nada! 😊";
-
-      } else {
-
-        response = "Todavía estoy aprendiendo 🤖📚. Pero estoy aquí para ayudarte.";
-
-      }
-
-      // Responder Karen después de un momento
-      setTimeout(function() {
-
-        chat.innerHTML += `
-          <div class="message karen">
-            ${response}
-          </div>
-        `;
-
-        chat.scrollTop = chat.scrollHeight;
-
-      }, 500);
+      // Respuesta de Karen
+      chat.innerHTML += `
+        <div class="message karen">
+          Hola 👋 Soy Karen. He recibido tu mensaje.
+        </div>
+      `;
 
       // Limpiar el cuadro de texto
       input.value = "";
 
+      // Bajar el chat automáticamente
+      chat.scrollTop = chat.scrollHeight;
     }
 
-    // También permite enviar con Enter
+    // También permite enviar pulsando Enter
     document.getElementById("messageInput").addEventListener("keydown", function(event) {
 
       if (event.key === "Enter") {
