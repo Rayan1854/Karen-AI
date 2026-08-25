@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Karen-AI</title>
+  <title>Karen AI</title>
 
   <style>
     * {
@@ -15,80 +15,135 @@
       font-family: Arial, sans-serif;
       background: #0f172a;
       color: white;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .app {
+      width: 100%;
       max-width: 600px;
-      margin: 0 auto;
-      min-height: 100vh;
-      padding: 20px;
+      height: 100vh;
+      max-height: 850px;
+      background: #111827;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
-    header {
-      text-align: center;
-      padding: 20px 0;
+    .header {
+      padding: 18px;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #334155;
     }
 
-    h1 {
+    .avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .header-info h1 {
       margin: 0;
-      font-size: 32px;
+      font-size: 20px;
     }
 
-    header p {
-      color: #94a3b8;
+    .status {
+      margin-top: 4px;
+      color: #4ade80;
+      font-size: 13px;
     }
 
     #chat {
-      background: #1e293b;
-      border-radius: 15px;
-      padding: 15px;
-      min-height: 400px;
-      margin-bottom: 15px;
+      flex: 1;
+      padding: 18px;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .message {
+      max-width: 82%;
       padding: 12px 15px;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      line-height: 1.5;
+      border-radius: 18px;
+      line-height: 1.4;
+      word-wrap: break-word;
     }
 
-    .karen {
-      background: #334155;
+    .message.user {
+      align-self: flex-end;
+      background: #7c3aed;
+      border-bottom-right-radius: 5px;
     }
 
-    .user {
-      background: #2563eb;
-      text-align: right;
+    .message.karen {
+      align-self: flex-start;
+      background: #273449;
+      border-bottom-left-radius: 5px;
+    }
+
+    .typing {
+      display: none;
+      align-self: flex-start;
+      background: #273449;
+      padding: 12px 16px;
+      border-radius: 18px;
+      color: #cbd5e1;
     }
 
     .input-area {
+      padding: 12px;
+      background: #1e293b;
+      border-top: 1px solid #334155;
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
 
     #messageInput {
       flex: 1;
-      padding: 14px;
       border: none;
-      border-radius: 10px;
-      font-size: 16px;
       outline: none;
+      background: #0f172a;
+      color: white;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 16px;
     }
 
-    button {
+    #messageInput::placeholder {
+      color: #94a3b8;
+    }
+
+    #sendButton {
       border: none;
-      border-radius: 10px;
-      padding: 12px 18px;
-      background: #2563eb;
+      background: #7c3aed;
       color: white;
-      font-size: 16px;
+      padding: 0 18px;
+      border-radius: 14px;
+      font-size: 15px;
       cursor: pointer;
     }
 
-    button:active {
-      transform: scale(0.97);
+    #sendButton:active {
+      transform: scale(0.96);
+    }
+
+    .welcome {
+      text-align: center;
+      color: #94a3b8;
+      margin: 10px 0 5px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -97,18 +152,29 @@
 
   <div class="app">
 
-    <header>
-      <h1>🤖 Karen</h1>
-      <p>Tu asistente de inteligencia artificial</p>
-    </header>
+    <div class="header">
+      <div class="avatar">K</div>
+
+      <div class="header-info">
+        <h1>Karen AI</h1>
+        <div class="status">● En línea</div>
+      </div>
+    </div>
 
     <div id="chat">
 
-      <div class="message karen">
-        Hola, soy Karen. 👋<br>
-        Estoy aquí para ayudarte.
+      <div class="welcome">
+        Karen AI está lista para hablar contigo.
       </div>
 
+      <div class="message karen">
+        Hola 👋 Soy Karen. ¿En qué puedo ayudarte?
+      </div>
+
+    </div>
+
+    <div id="typing" class="typing">
+      Karen está escribiendo...
     </div>
 
     <div class="input-area">
@@ -117,9 +183,10 @@
         id="messageInput"
         type="text"
         placeholder="Escribe tu mensaje..."
+        autocomplete="off"
       >
 
-      <button onclick="sendMessage()">
+      <button id="sendButton">
         Enviar
       </button>
 
@@ -129,10 +196,190 @@
 
   <script>
 
-    function sendMessage() {
+    const input = document.getElementById("messageInput");
+    const chat = document.getElementById("chat");
+    const sendButton = document.getElementById("sendButton");
+    const typing = document.getElementById("typing");
 
-      const input = document.getElementById("messageInput");
-      const chat = document.getElementById("chat");
+
+    function addMessage(text, sender) {
+
+      const message = document.createElement("div");
+
+      message.className = "message " + sender;
+
+      message.textContent = text;
+
+      chat.appendChild(message);
+
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+
+    function getKarenResponse(message) {
+
+      const text = message
+        .toLowerCase()
+        .trim();
+
+
+      // SALUDOS
+
+      if (
+        text === "hola" ||
+        text === "holaa" ||
+        text === "hola!" ||
+        text === "buenas" ||
+        text.includes("buenos días") ||
+        text.includes("buenas tardes") ||
+        text.includes("buenas noches")
+      ) {
+        return "¡Hola! 👋 Soy Karen. Qué gusto hablar contigo. ¿Cómo estás?";
+      }
+
+
+      // CÓMO ESTÁS
+
+      if (
+        text.includes("cómo estás") ||
+        text.includes("como estas") ||
+        text.includes("que tal estás") ||
+        text.includes("qué tal estás")
+      ) {
+        return "Estoy muy bien, gracias por preguntar 😊. Aquí estoy contigo. ¿Y tú, cómo estás?";
+      }
+
+
+      // QUIÉN ERES
+
+      if (
+        text.includes("quién eres") ||
+        text.includes("quien eres") ||
+        text.includes("qué eres") ||
+        text.includes("que eres")
+      ) {
+        return "Soy Karen AI 🤖. Estoy aquí para conversar contigo, responder preguntas y ayudarte.";
+      }
+
+
+      // NOMBRE
+
+      if (
+        text.includes("cómo te llamas") ||
+        text.includes("como te llamas") ||
+        text.includes("tu nombre")
+      ) {
+        return "Me llamo Karen 😊.";
+      }
+
+
+      // GRACIAS
+
+      if (
+        text.includes("gracias") ||
+        text.includes("muchas gracias")
+      ) {
+        return "¡De nada! 😊 Me alegra poder ayudarte.";
+      }
+
+
+      // ADIÓS
+
+      if (
+        text === "adiós" ||
+        text === "adios" ||
+        text === "hasta luego" ||
+        text.includes("me voy")
+      ) {
+        return "¡Hasta luego! 👋 Cuando quieras volver a hablar, aquí estaré.";
+      }
+
+
+      // BIEN
+
+      if (
+        text === "bien" ||
+        text.includes("estoy bien") ||
+        text.includes("muy bien")
+      ) {
+        return "¡Me alegro mucho! 😊 ¿Qué te gustaría hacer ahora?";
+      }
+
+
+      // MAL / TRISTE
+
+      if (
+        text.includes("estoy mal") ||
+        text.includes("estoy triste") ||
+        text.includes("triste")
+      ) {
+        return "Vaya... 😔 Si quieres, puedes contarme qué ha pasado. Te escucho.";
+      }
+
+
+      // AYUDA
+
+      if (
+        text.includes("ayuda") ||
+        text.includes("ayúdame") ||
+        text.includes("ayudame")
+      ) {
+        return "Claro 👍. Dime qué necesitas y vamos paso a paso.";
+      }
+
+
+      // QUÉ HACES
+
+      if (
+        text.includes("qué haces") ||
+        text.includes("que haces")
+      ) {
+        return "Estoy aquí hablando contigo 😊. Puedes preguntarme lo que quieras.";
+      }
+
+
+      // CHISTE
+
+      if (
+        text.includes("chiste") ||
+        text.includes("cuéntame algo gracioso") ||
+        text.includes("cuentame algo gracioso")
+      ) {
+        return "Claro 😂. ¿Por qué el ordenador fue al médico? Porque tenía un virus.";
+      }
+
+
+      // HORA
+
+      if (
+        text.includes("qué hora") ||
+        text.includes("que hora")
+      ) {
+        const ahora = new Date();
+
+        return "Ahora mismo son las " +
+          ahora.toLocaleTimeString("es-ES", {
+            hour: "2-digit",
+            minute: "2-digit"
+          }) +
+          " ⏰.";
+      }
+
+
+      // PREGUNTAS GENERALES
+
+      if (text.includes("qué puedes hacer") || text.includes("que puedes hacer")) {
+        return "Puedo conversar contigo, responder preguntas sencillas, ayudarte con ideas, explicarte cosas y acompañarte en una conversación. 🤖";
+      }
+
+
+      // RESPUESTA POR DEFECTO
+
+      return "Entiendo 😊. Cuéntame un poco más sobre eso y trataré de ayudarte.";
+    }
+
+
+    function sendMessage() {
 
       const message = input.value.trim();
 
@@ -140,35 +387,61 @@
         return;
       }
 
+
       // Mostrar mensaje del usuario
-      chat.innerHTML += `
-        <div class="message user">
-          ${message}
-        </div>
-      `;
 
-      // Respuesta de Karen
-      chat.innerHTML += `
-        <div class="message karen">
-          Hola 👋 Soy Karen. He recibido tu mensaje.
-        </div>
-      `;
+      addMessage(message, "user");
 
-      // Limpiar el cuadro de texto
       input.value = "";
 
-      // Bajar el chat automáticamente
+      input.focus();
+
+
+      // Mostrar que Karen está escribiendo
+
+      typing.style.display = "block";
+
       chat.scrollTop = chat.scrollHeight;
+
+
+      // Responder después de un pequeño tiempo
+
+      setTimeout(function() {
+
+        typing.style.display = "none";
+
+        const response = getKarenResponse(message);
+
+        addMessage(response, "karen");
+
+      }, 700);
+
     }
 
-    // También permite enviar pulsando Enter
-    document.getElementById("messageInput").addEventListener("keydown", function(event) {
+
+    // Botón Enviar
+
+    sendButton.addEventListener("click", sendMessage);
+
+
+    // Tecla Enter
+
+    input.addEventListener("keydown", function(event) {
 
       if (event.key === "Enter") {
+
+        event.preventDefault();
+
         sendMessage();
+
       }
 
     });
+
+
+    // Enfocar automáticamente el campo
+
+    input.focus();
 
   </script>
 
