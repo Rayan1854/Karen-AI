@@ -15,7 +15,7 @@
       font-family: Arial, sans-serif;
       background: #0f172a;
       color: white;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -23,127 +23,108 @@
 
     .app {
       width: 100%;
-      max-width: 600px;
+      max-width: 500px;
       height: 100vh;
       max-height: 850px;
-      background: #111827;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      background: #111827;
     }
 
     .header {
       padding: 18px;
       background: #1e293b;
-      display: flex;
-      align-items: center;
-      gap: 12px;
       border-bottom: 1px solid #334155;
+      text-align: center;
     }
 
-    .avatar {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #8b5cf6, #ec4899);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 20px;
-    }
-
-    .header-info h1 {
+    .header h1 {
       margin: 0;
-      font-size: 20px;
+      font-size: 24px;
     }
 
-    .status {
-      margin-top: 4px;
-      color: #4ade80;
-      font-size: 13px;
+    .header p {
+      margin: 6px 0 0;
+      color: #94a3b8;
+      font-size: 14px;
     }
 
     #chat {
       flex: 1;
-      padding: 18px;
       overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      padding: 18px;
     }
 
     .message {
-      max-width: 82%;
+      max-width: 85%;
       padding: 12px 15px;
-      border-radius: 18px;
+      margin-bottom: 12px;
+      border-radius: 16px;
       line-height: 1.4;
       word-wrap: break-word;
     }
 
     .message.user {
-      align-self: flex-end;
-      background: #7c3aed;
-      border-bottom-right-radius: 5px;
+      margin-left: auto;
+      background: #2563eb;
+      border-bottom-right-radius: 4px;
     }
 
     .message.karen {
-      align-self: flex-start;
-      background: #273449;
-      border-bottom-left-radius: 5px;
+      margin-right: auto;
+      background: #334155;
+      border-bottom-left-radius: 4px;
     }
 
     .typing {
-      display: none;
-      align-self: flex-start;
-      background: #273449;
-      padding: 12px 16px;
-      border-radius: 18px;
-      color: #cbd5e1;
+      color: #94a3b8;
+      font-style: italic;
+      margin: 10px 0;
     }
 
     .input-area {
+      display: flex;
+      gap: 8px;
       padding: 12px;
       background: #1e293b;
       border-top: 1px solid #334155;
-      display: flex;
-      gap: 8px;
     }
 
     #messageInput {
       flex: 1;
+      min-width: 0;
+      padding: 13px;
       border: none;
       outline: none;
+      border-radius: 12px;
       background: #0f172a;
       color: white;
-      padding: 14px;
-      border-radius: 14px;
       font-size: 16px;
     }
 
     #messageInput::placeholder {
-      color: #94a3b8;
+      color: #64748b;
     }
 
-    #sendButton {
+    button {
       border: none;
-      background: #7c3aed;
-      color: white;
+      border-radius: 12px;
       padding: 0 18px;
-      border-radius: 14px;
-      font-size: 15px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
     }
 
-    #sendButton:active {
-      transform: scale(0.96);
+    button:active {
+      transform: scale(0.97);
     }
 
-    .welcome {
-      text-align: center;
-      color: #94a3b8;
-      margin: 10px 0 5px;
-      font-size: 14px;
+    @media (max-width: 500px) {
+      .app {
+        max-height: none;
+      }
     }
   </style>
 </head>
@@ -153,28 +134,16 @@
   <div class="app">
 
     <div class="header">
-      <div class="avatar">K</div>
-
-      <div class="header-info">
-        <h1>Karen AI</h1>
-        <div class="status">● En línea</div>
-      </div>
+      <h1>🤖 Karen AI</h1>
+      <p>Tu asistente virtual</p>
     </div>
 
     <div id="chat">
-
-      <div class="welcome">
-        Karen AI está lista para hablar contigo.
-      </div>
 
       <div class="message karen">
         Hola 👋 Soy Karen. ¿En qué puedo ayudarte?
       </div>
 
-    </div>
-
-    <div id="typing" class="typing">
-      Karen está escribiendo...
     </div>
 
     <div class="input-area">
@@ -186,9 +155,7 @@
         autocomplete="off"
       >
 
-      <button id="sendButton">
-        Enviar
-      </button>
+      <button onclick="sendMessage()">Enviar</button>
 
     </div>
 
@@ -198,15 +165,20 @@
 
     const input = document.getElementById("messageInput");
     const chat = document.getElementById("chat");
-    const sendButton = document.getElementById("sendButton");
-    const typing = document.getElementById("typing");
+
+    // Permite enviar pulsando ENTER
+    input.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    });
 
 
-    function addMessage(text, sender) {
+    function addMessage(text, type) {
 
       const message = document.createElement("div");
 
-      message.className = "message " + sender;
+      message.className = "message " + type;
 
       message.textContent = text;
 
@@ -220,162 +192,157 @@
 
       const text = message
         .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
         .trim();
 
 
       // SALUDOS
-
       if (
         text === "hola" ||
-        text === "holaa" ||
-        text === "hola!" ||
-        text === "buenas" ||
-        text.includes("buenos días") ||
+        text.includes("hola ") ||
+        text.includes("buenas") ||
+        text.includes("buenos dias") ||
         text.includes("buenas tardes") ||
         text.includes("buenas noches")
       ) {
-        return "¡Hola! 👋 Soy Karen. Qué gusto hablar contigo. ¿Cómo estás?";
+        return "¡Hola! 👋 Soy Karen. Me alegra hablar contigo. ¿Cómo estás?";
       }
 
 
-      // CÓMO ESTÁS
-
+      // ¿CÓMO ESTÁS?
       if (
-        text.includes("cómo estás") ||
         text.includes("como estas") ||
-        text.includes("que tal estás") ||
-        text.includes("qué tal estás")
+        text.includes("como te encuentras") ||
+        text.includes("que tal estas")
       ) {
-        return "Estoy muy bien, gracias por preguntar 😊. Aquí estoy contigo. ¿Y tú, cómo estás?";
+        return "Estoy muy bien 😊 Gracias por preguntar. Estoy aquí contigo. ¿Qué te gustaría hacer?";
       }
 
 
       // QUIÉN ERES
-
       if (
-        text.includes("quién eres") ||
         text.includes("quien eres") ||
-        text.includes("qué eres") ||
-        text.includes("que eres")
+        text.includes("quien es karen") ||
+        text.includes("eres una ia") ||
+        text.includes("eres una inteligencia artificial")
       ) {
-        return "Soy Karen AI 🤖. Estoy aquí para conversar contigo, responder preguntas y ayudarte.";
+        return "Soy Karen 🤖, una asistente virtual creada para conversar contigo y ayudarte.";
       }
 
 
       // NOMBRE
-
       if (
-        text.includes("cómo te llamas") ||
         text.includes("como te llamas") ||
-        text.includes("tu nombre")
+        text.includes("cual es tu nombre")
       ) {
         return "Me llamo Karen 😊.";
       }
 
 
       // GRACIAS
-
       if (
         text.includes("gracias") ||
         text.includes("muchas gracias")
       ) {
-        return "¡De nada! 😊 Me alegra poder ayudarte.";
+        return "¡De nada! 😊 Para eso estoy.";
       }
 
 
-      // ADIÓS
-
+      // DESPEDIDA
       if (
-        text === "adiós" ||
-        text === "adios" ||
-        text === "hasta luego" ||
-        text.includes("me voy")
+        text.includes("adios") ||
+        text.includes("hasta luego") ||
+        text.includes("nos vemos") ||
+        text === "bye"
       ) {
-        return "¡Hasta luego! 👋 Cuando quieras volver a hablar, aquí estaré.";
-      }
-
-
-      // BIEN
-
-      if (
-        text === "bien" ||
-        text.includes("estoy bien") ||
-        text.includes("muy bien")
-      ) {
-        return "¡Me alegro mucho! 😊 ¿Qué te gustaría hacer ahora?";
-      }
-
-
-      // MAL / TRISTE
-
-      if (
-        text.includes("estoy mal") ||
-        text.includes("estoy triste") ||
-        text.includes("triste")
-      ) {
-        return "Vaya... 😔 Si quieres, puedes contarme qué ha pasado. Te escucho.";
+        return "¡Hasta luego! 👋 Cuando quieras, puedes volver a hablar conmigo.";
       }
 
 
       // AYUDA
-
       if (
         text.includes("ayuda") ||
-        text.includes("ayúdame") ||
-        text.includes("ayudame")
+        text.includes("puedes ayudarme")
       ) {
-        return "Claro 👍. Dime qué necesitas y vamos paso a paso.";
+        return "Claro 😊. Dime qué necesitas y veremos qué puedo hacer.";
       }
 
 
       // QUÉ HACES
-
       if (
-        text.includes("qué haces") ||
-        text.includes("que haces")
+        text.includes("que haces") ||
+        text.includes("que puedes hacer")
       ) {
-        return "Estoy aquí hablando contigo 😊. Puedes preguntarme lo que quieras.";
+        return "Puedo conversar contigo, responder preguntas sencillas y reaccionar de distintas maneras según lo que me escribas.";
       }
 
 
-      // CHISTE
+      // ESTADO DE ÁNIMO
+      if (
+        text.includes("estoy triste") ||
+        text.includes("me siento triste")
+      ) {
+        return "Lo siento 😔. Si quieres, puedes contarme qué ha pasado. Te escucho.";
+      }
+
 
       if (
-        text.includes("chiste") ||
-        text.includes("cuéntame algo gracioso") ||
-        text.includes("cuentame algo gracioso")
+        text.includes("estoy feliz") ||
+        text.includes("estoy contento") ||
+        text.includes("estoy contenta")
       ) {
-        return "Claro 😂. ¿Por qué el ordenador fue al médico? Porque tenía un virus.";
+        return "¡Qué bien! 😄 Me alegra saberlo. Cuéntame, ¿qué ha pasado?";
+      }
+
+
+      // PREGUNTAS SOBRE EL DÍA
+      if (
+        text.includes("que dia es") ||
+        text.includes("en que dia estamos")
+      ) {
+        const fecha = new Date();
+
+        return "Hoy es " +
+          fecha.toLocaleDateString("es-ES", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+          }) +
+          ".";
       }
 
 
       // HORA
-
       if (
-        text.includes("qué hora") ||
-        text.includes("que hora")
+        text.includes("que hora es") ||
+        text.includes("dime la hora")
       ) {
-        const ahora = new Date();
+        const fecha = new Date();
 
         return "Ahora mismo son las " +
-          ahora.toLocaleTimeString("es-ES", {
+          fecha.toLocaleTimeString("es-ES", {
             hour: "2-digit",
             minute: "2-digit"
           }) +
-          " ⏰.";
+          ".";
       }
 
 
-      // PREGUNTAS GENERALES
+      // RESPUESTAS GENERALES
+      const respuestas = [
+        "Interesante 🤔. Cuéntame un poco más.",
+        "Te estoy escuchando 👂. ¿Puedes explicármelo un poco mejor?",
+        "Entiendo 😊. ¿Qué quieres saber exactamente?",
+        "Vale. Estoy aquí contigo. Cuéntame más.",
+        "Eso suena interesante. ¿Qué quieres hacer con eso?",
+        "Entendido 👍. Explícame un poco más y te ayudo."
+      ];
 
-      if (text.includes("qué puedes hacer") || text.includes("que puedes hacer")) {
-        return "Puedo conversar contigo, responder preguntas sencillas, ayudarte con ideas, explicarte cosas y acompañarte en una conversación. 🤖";
-      }
-
-
-      // RESPUESTA POR DEFECTO
-
-      return "Entiendo 😊. Cuéntame un poco más sobre eso y trataré de ayudarte.";
+      return respuestas[
+        Math.floor(Math.random() * respuestas.length)
+      ];
     }
 
 
@@ -383,65 +350,43 @@
 
       const message = input.value.trim();
 
+      // No hacer nada si está vacío
       if (message === "") {
         return;
       }
 
 
       // Mostrar mensaje del usuario
-
       addMessage(message, "user");
 
-      input.value = "";
 
-      input.focus();
+      // Limpiar input
+      input.value = "";
 
 
       // Mostrar que Karen está escribiendo
+      const typing = document.createElement("div");
 
-      typing.style.display = "block";
+      typing.className = "typing";
+
+      typing.textContent = "Karen está escribiendo...";
+
+      chat.appendChild(typing);
 
       chat.scrollTop = chat.scrollHeight;
 
 
-      // Responder después de un pequeño tiempo
-
+      // Esperar un poco para que parezca una conversación
       setTimeout(function() {
 
-        typing.style.display = "none";
+        typing.remove();
 
         const response = getKarenResponse(message);
 
         addMessage(response, "karen");
 
       }, 700);
-
     }
-
-
-    // Botón Enviar
-
-    sendButton.addEventListener("click", sendMessage);
-
-
-    // Tecla Enter
-
-    input.addEventListener("keydown", function(event) {
-
-      if (event.key === "Enter") {
-
-        event.preventDefault();
-
-        sendMessage();
-
-      }
-
-    });
-
-
-    // Enfocar automáticamente el campo
-
-    input.focus();
 
   </script>
 
